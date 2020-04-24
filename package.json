@@ -1,0 +1,11 @@
+{
+  "name": "covid-19_bot",
+  "version": "1.2.0",
+  "description": "",
+  "main": "index.py",
+  "scripts": {
+    "test": "python index.py"
+  },
+  "author": "jDan735",
+  "license": "ISC"
+}
