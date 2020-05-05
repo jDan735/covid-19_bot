@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.py",
   "scripts": {
-    "test": "python index.py"
+    "test": "python index.py",
+    "deploy": "git add . & git commit -m \"Commit 2а\" & git push heroku master"
   },
   "author": "jDan735",
   "license": "ISC"
