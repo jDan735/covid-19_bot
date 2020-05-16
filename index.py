@@ -3,24 +3,19 @@ from telebot import types
 import COVID19Py
 import json
 import sys
+import time
 
 sys.path.insert(0, ".")
 import lib
 
-token = open("./botdata/token.txt", "r")
-bot = telebot.TeleBot(token.read())
-token.close()
+with open("countries.json", "r", encoding="utf-8") as datafile:
+    data = json.loads(datafile.read())
 
-menufile = open("./botdata/menu.json", "r", encoding="utf-8")
-menu = json.loads(menufile.read())
-menufile.close()
-
-datafile = open("countries.json", "r", encoding="utf-8")
-data = json.loads(datafile.read())
-datafile.close()
+with open("./botdata/token.txt") as token:
+    bot = telebot.TeleBot(token.read())
 
 covid19 = COVID19Py.COVID19()
-latest = covid19.getLatest()
+changes = covid19.getLatestChanges()
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -28,32 +23,45 @@ def start_message(message):
 
 @bot.message_handler(commands=["statistic"])
 def send_statistic(message):
-    num1 = latest["confirmed"]
-    num2 = latest["deaths"]
+    latest = covid19.getLatest()
+    data = covid19.getAll(timelines=True)
 
-    num3 = f"{num1:,}"
-    num4 = f"{num2:,}"
+    old = {
+        "confirmed": 0,
+        "deaths": 0
+    }
+    i = 0
+    while i != 256:
+        place = data["locations"][i]
+        old["confirmed"] += place["timelines"]["confirmed"]["timeline"]["2020-05-14T00:00:00Z"]
+        old["deaths"] += place["timelines"]["deaths"]["timeline"]["2020-05-14T00:00:00Z"]
+        i += 1
+    old = {
+        "confirmed": lib.getPrettyNumber(latest["confirmed"] - old["confirmed"]),
+        "deaths": lib.getPrettyNumber(latest["deaths"] - old["deaths"])
+    }
+    new = {
+        "confirmed": lib.getPrettyNumber(latest["confirmed"]),
+        "deaths": lib.getPrettyNumber(latest["deaths"])        
+    }
+    bot.send_message(message.chat.id, "🌎 *Весь мир:*\n\n🦠 *" + new["confirmed"] + "* `+" + old["confirmed"] + "` заражённых \n💀 *" + new["deaths"] + "* `+" + old["deaths"] + "` умерших", parse_mode="Markdown")
 
-    num5 = num3.replace(",", " ")
-    num6 = num4.replace(",", " ")
-
-    bot.send_message(message.chat.id, "🌎 *Весь мир:*\n\n🦠 *" + num5 + "* заражённых \n💀 *" + num6 + "* умерших \n🗺 *" + "185" + "* регионов", parse_mode="Markdown")
-        
 @bot.message_handler(commands=["regions"])
 def getOurRegion (message):
-    lib.loadMenu(message, "Выберите регион")
+    lib.loadMenu(data, message, "Выберите часть света")
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
     bot.delete_message(call.from_user.id, call.message.message_id)
-    for item in menu["region-choice-menu"]:
+    for item in data:
         if call.data == item[0]:
-            for key in data:
-                if key["name"].lower() == item[0].lower():
-                    for i in key["contries"]:
-                        data_local = lib.getCountryLatestData(i["id"])
-                        bot.send_message(call.message.chat.id, i["emoji"] + ' *' + i["name"] + ":*\n\n🦠 *" + data_local["confirmed"] + "* заражённых \n💀 *" + data_local["deaths"] + "* умерших", parse_mode="Markdown")
-            break
+            if type(item[1][0][1]) == list:
+                lib.loadMenuFromCall(item[1], call.message, "Выберите регион")
+            elif type(item[1][0][2]) == str:
+                for country in item[1]:
+                    data_local = lib.getCountryLatestData(country[1])
+                    bot.send_message(call.message.chat.id, country[2] + " *" + country[0] + ":*\n\n🦠 *" + data_local["new"]["confirmed"] + "* `+" + data_local["old"]["confirmed"] + "` заражённых \n💀 *" + data_local["new"]["deaths"] + "* `+" + data_local["old"]["deaths"] + "` умерших", parse_mode="Markdown")
+
 
 @bot.message_handler(commands=["time"])
 def sendStats (message):
