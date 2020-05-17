@@ -8,51 +8,63 @@ token = open("./botdata/token.txt", "r")
 bot = telebot.TeleBot(token.read())
 token.close()
 
-datafile = open("countries.json", "r", encoding="utf-8")
-data = json.loads(datafile.read())
-datafile.close()
+with open("countries.json", "r", encoding="utf-8") as datafile:
+    data = json.loads(datafile.read())
 
 
 covid19 = COVID19Py.COVID19()
 latest = covid19.getLatest()
 
-menufile = open("./botdata/menu.json", "r", encoding="utf-8")
-menu = json.loads(menufile.read())
-menufile.close()
+def getPrettyNumber(number):
+	return str((f"{number:,}").replace(",", " "))
 
 def getCountryLatestData (countryid):
 	if str(type(countryid)) == "<class 'int'>":
-		country = covid19.getLocationById(countryid)["latest"]
+		country = covid19.getLocationById(countryid)
 	elif str(type(countryid)) == "<class 'str'>":
 		countryplaces = covid19.getLocationByCountryCode(countryid)
-		country = {"confirmed": 0, "deaths": 0}
+		country = {
+			"new": {
+				"confirmed": 0,
+				"deaths": 0
+			},
+			"old": {
+				"confirmed": 0,
+				"deaths": 0
+			}
+		}
 		for place in countryplaces:
-			country["confirmed"] += place["latest"]["confirmed"]
-			country["deaths"] += place["latest"]["deaths"]
-
-	num_country1 = country["confirmed"]
-	num_country2 = country["deaths"]
-
-	num_country3 = f"{num_country1:,}"
-	num_country4 = f"{num_country2:,}"
-
-	num_country5 = num_country3.replace(",", " ")
-	num_country6 = num_country4.replace(",", " ")
-
+			country["new"]["confirmed"] += place["latest"]["confirmed"]
+			country["new"]["deaths"] += place["latest"]["deaths"]
 	return {
-		"confirmed": num_country5,
-		"deaths": num_country6
+		"old": {
+			"confirmed": str(getPrettyNumber(country["latest"]["confirmed"] - country["timelines"]["confirmed"]["timeline"]["2020-05-14T00:00:00Z"])),
+			"deaths": str(getPrettyNumber(country["latest"]["deaths"] - country["timelines"]["deaths"]["timeline"]["2020-05-14T00:00:00Z"]))		
+		},
+		"new": {
+			"confirmed": str(getPrettyNumber(country["latest"]["confirmed"])),
+			"deaths": str(getPrettyNumber(country["latest"]["deaths"]))
+		}
 	}
 
-def loadMenu (message, text):
-	keyboard = types.InlineKeyboardMarkup()
-	for item in menu:
-		keyboard.add(types.InlineKeyboardButton(text=item[0], callback_data=item[0]))
-	bot.send_message(message.from_user.id, text=text, reply_markup=keyboard)
+def sendLocationStatsFromCall(call, data, country):
+    keyboard = telebot.types.InlineKeyboardMarkup()
+    keyboard.add(telebot.types.InlineKeyboardButton(text="Подробнее", callback_data="more"))
 
-
-
-	
-
-
-
+def sendLocationStatsFromCall(call, data, country):
+    bot.send_message(call.message.chat.id, country[2] + "* " + country[0] + "*\n\n" +
+        "📊 *" + getPrettyNumber(data["totalCases"]) + "* случаев\n" +
+        "🩹 *" + getPrettyNumber(data["tests"]) + "* тестов\n\n" +
+        "🤒 *" + getPrettyNumber(data["activeCases"]) + "* `+" + getPrettyNumber(data["newCases"]) + "` болеет\n" +
+        "💊 *" + getPrettyNumber(data["totalRecovered"]) + "* `+" + "0" + "` здоровых\n" +
+        "💀 *" + getPrettyNumber(data["totalDeaths"]) + "* `+" + getPrettyNumber(data["newDeaths"]) + "` смертей",
+        parse_mode = "Markdown")
+    
+def sendLocationStats(message, data, country):
+    bot.send_message(call.message.chat.id, country[2] + "* " + country[0] + "*\n\n" +
+        "📊 *" + getPrettyNumber(data["totalCases"]) + "* случаев\n" +
+        "🩹 *" + getPrettyNumber(data["tests"]) + "* тестов\n\n" +
+        "🤒 *" + getPrettyNumber(data["activeCases"]) + "* `+" + getPrettyNumber(data["newCases"]) + "` болеет\n" +
+        "💊 *" + getPrettyNumber(data["totalRecovered"]) + "* `+" + "0" + "` здоровых\n" +
+        "💀 *" + getPrettyNumber(data["totalDeaths"]) + "* `+" + getPrettyNumber(data["newDeaths"]) + "` смертей",
+        parse_mode = "Markdown")
