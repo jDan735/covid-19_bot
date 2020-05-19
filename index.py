@@ -4,11 +4,11 @@ import json
 import sys
 import time
 
-sys.path.insert(0, ".")
+sys.path.insert(0, "./lib")
 import lib
 import covid19
 
-with open("countries.json", "r", encoding="utf-8") as datafile:
+with open("./botdata/countries.json", "r", encoding="utf-8") as datafile:
     data = json.loads(datafile.read())
 
 with open("./botdata/token.txt") as token:
