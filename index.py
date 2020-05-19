@@ -4,8 +4,8 @@ import json
 import sys
 import time
 
-sys.path.insert(0, "./lib")
-import lib
+sys.path.insert(0, "./lib/")
+import * from lib
 import covid19
 
 with open("./botdata/countries.json", "r", encoding="utf-8") as datafile:
@@ -13,9 +13,6 @@ with open("./botdata/countries.json", "r", encoding="utf-8") as datafile:
 
 with open("./botdata/token.txt") as token:
     bot = telebot.TeleBot(token.read())
-
-def getPrettyNumber(number):
-    return str((f"{number:,}").replace(",", " "))
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
@@ -25,11 +22,11 @@ def start_message(message):
 def send_statistic(message):
     world = covid19.getWorld()
     bot.send_message(message.chat.id, "🌎 *Весь мир*\n\n" + 
-        "📊 *" + lib.getPrettyNumber(world["cases"]) + "* случаев\n" +
-        "🩹 *" + lib.getPrettyNumber(world["tests"]) + "* тестов\n\n" +
-        "🤒 *" + lib.getPrettyNumber(world["active"]) + "* `+" + lib.getPrettyNumber(world["todayCases"]) + "` болеет\n" +
-        "💊 *" + lib.getPrettyNumber(world["recovered"]) + "* `+" + "0" + "` здоровых\n" +
-        "💀 *" + lib.getPrettyNumber(world["deaths"]) + "* `+" + lib.getPrettyNumber(world["todayDeaths"]) + "` смертей",
+        "📊 *" + getPrettyNumber(world["cases"]) + "* случаев\n" +
+        "🩹 *" + getPrettyNumber(world["tests"]) + "* тестов\n\n" +
+        "🤒 *" + getPrettyNumber(world["active"]) + "* `+" + getPrettyNumber(world["todayCases"]) + "` болеет\n" +
+        "💊 *" + getPrettyNumber(world["recovered"]) + "* `+" + "0" + "` здоровых\n" +
+        "💀 *" + getPrettyNumber(world["deaths"]) + "* `+" + getPrettyNumber(world["todayDeaths"]) + "` смертей",
         parse_mode = "Markdown")
 
 def loadMenu (info, message, text):
@@ -72,12 +69,12 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[0][1][0][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
     if call.data == "asia_rest":
         data2 = covid19.getCountries()
         for country in data[0][1][1][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
     # ===== America =====
 
@@ -90,7 +87,7 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[1][1][0][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)  
+            sendLocationStats(call, data2[country[1]], country)  
     if call.data == "south_america":
         keyboard = telebot.types.InlineKeyboardMarkup()
         keyboard.add(telebot.types.InlineKeyboardButton(text="Карибские страны", callback_data="caribian"))
@@ -100,12 +97,12 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[1][1][1][1][0][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
     if call.data == "south_america_rest":
         data2 = covid19.getCountries()
         for country in data[1][1][1][1][1][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country) 
+            sendLocationStats(call, data2[country[1]], country) 
 
     # ===== Africa [beta] =====
 
@@ -113,7 +110,7 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[2][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country) 
+            sendLocationStats(call, data2[country[1]], country) 
 
     # ===== Oceania =====
 
@@ -121,7 +118,7 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[3][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)     
+            sendLocationStats(call, data2[country[1]], country)     
 
     # ===== Europa =====
 
@@ -136,7 +133,7 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[4][1][0][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
     if call.data == "europa_rest":
         keyboard = telebot.types.InlineKeyboardMarkup()
@@ -147,12 +144,12 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[4][1][1][1][0][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
     if call.data == "europa_rest_rest":
         data2 = covid19.getCountries()
         for country in data[4][1][1][1][1][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
     if call.data == "EU":
         keyboard = telebot.types.InlineKeyboardMarkup()
@@ -168,38 +165,38 @@ def callback_worker(call):
         data2 = covid19.getCountries()
         for country in data[4][1][2][1][0][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
     if call.data == "benilux":
         data2 = covid19.getCountries()
         for country in data[4][1][2][1][1][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
     if call.data == "pribaltica":
         data2 = covid19.getCountries()
         for country in data[4][1][2][1][2][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
     if call.data == "balcans":
         data2 = covid19.getCountries()
         for country in data[4][1][2][1][5][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
 
     if call.data == "scandinavia":
         data2 = covid19.getCountries()
         for country in data[4][1][2][1][3][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
     if call.data == "eu_rest":
         data2 = covid19.getCountries()
         for country in data[4][1][2][1][4][1]:
             data1 = data2[country[1]]
-            lib.sendLocationStatsFromCall(call, data2[country[1]], country)
+            sendLocationStats(call, data2[country[1]], country)
 
 @bot.message_handler(commands=["time"])
 def sendStats (message):
