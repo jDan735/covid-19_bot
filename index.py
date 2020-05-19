@@ -5,7 +5,7 @@ import sys
 import time
 
 sys.path.insert(0, "./lib/")
-import * from lib
+from lib import *
 import covid19
 
 with open("./botdata/countries.json", "r", encoding="utf-8") as datafile:
