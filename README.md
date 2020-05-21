@@ -52,5 +52,5 @@ python index.py
 ...
 ```
 ## 🔨 Зависимости
+### 📢 [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
 ### 👑 [COVID19 tracker](https://github.com/jDan735/covid19-tracker)
-Поддержка api https://data.nepalcorona.info/api в python.
