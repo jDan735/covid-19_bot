@@ -60,5 +60,5 @@ python index.py
 💀 1 +0 смертей
 ```
 ## 🔨 Зависимости
-### 👑 COVID19 tracker
-Поддержка api https://data.nepalcorona.info/api в python. [Подробнее](https://github.com/jDan735/covid19-tracker)
+### 👑 [COVID19 tracker](https://github.com/jDan735/covid19-tracker)
+Поддержка api https://data.nepalcorona.info/api в python.
