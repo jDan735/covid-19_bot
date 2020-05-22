@@ -1,28 +1,27 @@
 # 🤖 Covid-19_bot
-Covid-19_bot - телеграм-бот для получения статистики по COVID19
-## 🚀 Запуск
+Covid-19_bot - telegram-bot for statistics on COVID19
+## 🚀 Start
 ```
 python index.py
 ```
-## 🎛 Команды
-Команды - способ способ коммуникации с ботом
+## 🎛 Commands
 ### /start
-Перенаправляет на /statistic
-#### 📥 Ввод
+Link to /statistic
+#### 📥 Input
 ```
 /statistic
 ```
-#### 📤 Вывод
+#### 📤 Output
 ```
 Привет! Просмотреть статистику можно используя команду /statistic
 ```
 ### /statistic
-Отправляет статистику по всему миру
-#### 📥 Ввод
+Send world statistic
+#### 📥 Input
 ```
 /statistic
 ```
-#### 📤 Вывод
+#### 📤 Output
 ```
 🌎 Весь мир
 
@@ -34,11 +33,12 @@ python index.py
 💀 329 739 +500 смертей
 ```
 ### /regions
-#### 📥 Ввод
+Send region statistic
+#### 📥 Input
 ```
 /statistic > Азия > Китай
 ```
-#### 📤 Вывод
+#### 📤 Output
 ```
 🇨🇳 КНР
 
@@ -51,6 +51,6 @@ python index.py
 
 ...
 ```
-## 🔨 Зависимости
+## 🔨 Dependencies
 ### 📢 [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
 ### 👑 [COVID19 tracker](https://github.com/jDan735/covid19-tracker)
